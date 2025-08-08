@@ -25,6 +25,24 @@ namespace :fly do
     sh 'mkdir -p /mnt/sqlite_data'
     sh 'chown rails:rails /mnt/sqlite_data'
     
+    # Setup Vibes engine on volume
+    puts "🎵 Setting up Vibes engine..."
+    sh 'mkdir -p /mnt/vibes'
+    sh 'chown rails:rails /mnt/vibes'
+    
+    # Copy engine files from local to volume if not already present
+    if Dir.exist?('/mnt/vibes/app')
+      puts "✅ Vibes engine already exists on volume"
+    else
+      puts "📦 Copying Vibes engine to volume..."
+      if Dir.exist?('lib/engines/vibes')
+        sh 'cp -r lib/engines/vibes/* /mnt/vibes/'
+        puts "✅ Vibes engine copied to volume"
+      else
+        puts "⚠️ Local Vibes engine not found, volume will be empty"
+      end
+    end
+    
     # Create and migrate database with memory-efficient approach
     puts "🗄️ Setting up database..."
     begin
