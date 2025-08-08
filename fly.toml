@@ -5,6 +5,9 @@ primary_region = "ord"
 [build]
   buildpacks = ["heroku/ruby"]
 
+[deploy]
+  release_command = "bin/rails db:create db:migrate"
+
 [env]
   RAILS_ENV = "production"
   RAILS_SERVE_STATIC_FILES = "true"

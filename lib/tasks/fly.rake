@@ -17,7 +17,7 @@ namespace :fly do
   # - full access to secrets, databases
   # - failures here result in VM being started, shutdown, and rolled back
   # to last successful deploy (if any).
-  task :server => 'db:migrate' do
+  task :server do
     sh 'bin/rails server'
   end
 end
