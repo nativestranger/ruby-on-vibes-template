@@ -25,7 +25,7 @@ namespace :fly do
     # Create and migrate database
     sh 'bin/rails db:create db:migrate'
     
-    # Start the server
-    sh 'bin/rails server'
+    # Start the server with proper binding for Fly
+    sh 'bin/rails server -p 3000 -b 0.0.0.0'
   end
 end
