@@ -6,7 +6,7 @@ primary_region = "ord"
   buildpacks = ["heroku/ruby"]
 
 [deploy]
-  release_command = "mkdir -p /mnt/sqlite_data && chown rails:rails /mnt/sqlite_data && bin/rails db:create db:migrate"
+  release_command = "sh -c 'mkdir -p /mnt/sqlite_data && chown rails:rails /mnt/sqlite_data && bin/rails db:create db:migrate'"
 
 [env]
   RAILS_ENV = "production"
