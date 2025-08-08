@@ -37,6 +37,10 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
+  # Allow iframe embedding in development (for Ruby on Vibes preview)
+  config.force_ssl = false
+  config.action_dispatch.default_headers.delete('X-Frame-Options')
+  
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
