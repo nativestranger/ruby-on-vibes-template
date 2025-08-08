@@ -18,6 +18,14 @@ namespace :fly do
   # - failures here result in VM being started, shutdown, and rolled back
   # to last successful deploy (if any).
   task :server do
+    # Ensure SQLite directory exists and has proper permissions
+    sh 'mkdir -p /mnt/sqlite_data'
+    sh 'chown -R rails:rails /mnt/sqlite_data'
+    
+    # Create and migrate database
+    sh 'bin/rails db:create db:migrate'
+    
+    # Start the server
     sh 'bin/rails server'
   end
 end
