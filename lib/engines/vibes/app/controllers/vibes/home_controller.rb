@@ -1,8 +1,7 @@
 module Vibes
-  class HomeController < ApplicationController
+  class HomeController < Vibes::ApplicationController
     def index
-      # Welcome page for Ruby on Vibes
-      # Shows engine status and navigation
+      # Homepage for the Vibes engine
     end
   end
 end

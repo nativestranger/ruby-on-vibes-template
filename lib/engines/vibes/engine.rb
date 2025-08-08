@@ -9,6 +9,8 @@ module Vibes
       g.helper false
     end
     
+
+    
     # Configure paths for development vs Fly.io
     initializer "vibes.configure_paths", before: :set_autoload_paths do |app|
       if Rails.env.development? && !ENV['FLY_APP_NAME']
