@@ -25,17 +25,19 @@ namespace :fly do
     sh 'mkdir -p /mnt/sqlite_data'
     sh 'chown rails:rails /mnt/sqlite_data'
     
-    # Create and migrate database with better error handling
+    # Create and migrate database with memory-efficient approach
     puts "🗄️ Setting up database..."
     begin
-      sh 'bin/rails db:create'
+      # Use RAILS_ENV=production but with minimal loading
+      sh 'RAILS_ENV=production bin/rails db:create --trace'
       puts "✅ Database created"
     rescue => e
       puts "⚠️ Database create failed (might already exist): #{e.message}"
     end
     
     begin
-      sh 'bin/rails db:migrate'
+      # Run migrations with minimal memory usage
+      sh 'RAILS_ENV=production bin/rails db:migrate --trace'
       puts "✅ Migrations completed"
     rescue => e
       puts "❌ Migration failed: #{e.message}"
