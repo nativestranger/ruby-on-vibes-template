@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
   devise_for :users
+  
+  # Vibes engine routes (user/AI generated features)
+  namespace :vibes do
+    root 'home#index'
+  end
+  
   # IslandJS demo routes (you can remove these)
   get 'islandjs', to: 'islandjs_demo#index'
   get 'islandjs/react', to: 'islandjs_demo#react'
@@ -15,5 +21,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "islandjs_demo#index"
+  root "vibes/home#index"
 end

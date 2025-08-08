@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruby on Vibes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+  <div class="min-h-full w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 text-center">
+      <!-- Logo/Icon -->
+      <div>
+        <div class="mx-auto h-20 w-20 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center">
+          <span class="text-3xl">🎵</span>
+        </div>
+        <h1 class="mt-6 text-6xl font-extrabold text-white">
+          Ruby on <span class="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">Vibes</span>
+        </h1>
+        <p class="mt-4 text-xl text-gray-300">
+          AI-powered Rails development
+        </p>
+      </div>
+
+      <!-- Navigation -->
+      <div class="mt-8 space-y-4">
+
+        
+        <% if user_signed_in? %>
+          <div class="text-gray-300 text-sm">
+            Welcome back, <%= current_user.email %>!
+            <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "text-pink-400 hover:text-pink-300 ml-2" %>
+          </div>
+        <% else %>
+          <div class="flex space-x-4">
+            <%= link_to "Sign In", '/users/sign_in', class: "flex-1 py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:border-white transition-colors" %>
+            <%= link_to "Sign Up", '/users/sign_up', class: "flex-1 py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:border-white transition-colors" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Engine Status -->
+      <div class="mt-8 text-xs text-gray-400">
+        <p>Engine loaded from: 
+          <% if Rails.env.development? && !ENV['FLY_APP_NAME'] %>
+            <span class="text-green-400">📁 Local filesystem</span>
+          <% else %>
+            <span class="text-blue-400">💾 Fly.io volume</span>
+          <% end %>
+        </p>
+        <p class="mt-1">Environment: <span class="text-yellow-400"><%= Rails.env %></span></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
