@@ -24,7 +24,10 @@ namespace :fly do
     puts "📁 Setting up shared volume structure..."
     sh 'mkdir -p /mnt/data/sqlite'
     sh 'mkdir -p /mnt/data/vibes'
-    sh 'chown -R rails:rails /mnt/data'
+    # Avoid recursive chown to prevent lost+found permission errors
+    sh 'chown rails:rails /mnt/data'
+    sh 'chown rails:rails /mnt/data/sqlite'
+    sh 'chown rails:rails /mnt/data/vibes'
     
     # Setup Vibes engine on volume
     puts "🎵 Setting up Vibes engine..."
