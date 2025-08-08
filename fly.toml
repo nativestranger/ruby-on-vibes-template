@@ -13,12 +13,8 @@ primary_region = "ord"
   RAILS_LOG_TO_STDOUT = "true"
 
 [[mounts]]
-  source = "sqlite_data"
-  destination = "/mnt/sqlite_data"
-
-[[mounts]]
-  source = "vibes_engine"
-  destination = "/mnt/vibes"
+  source = "app_data"
+  destination = "/mnt/data"
 
 [http_service]
   internal_port = 3000

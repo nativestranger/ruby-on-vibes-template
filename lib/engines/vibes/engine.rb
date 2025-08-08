@@ -17,8 +17,8 @@ module Vibes
         # Local development: use lib/engines/vibes
         vibes_root = Rails.root.join('lib', 'engines', 'vibes')
       else
-        # Fly.io: use mounted volume
-        vibes_root = Pathname.new('/mnt/vibes')
+        # Fly.io: use mounted volume (shared volume structure)
+        vibes_root = Pathname.new('/mnt/data/vibes')
       end
       
       # Only add paths if the directory exists
