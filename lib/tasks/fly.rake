@@ -20,7 +20,7 @@ namespace :fly do
   task :server do
     # Ensure SQLite directory exists and has proper permissions
     sh 'mkdir -p /mnt/sqlite_data'
-    sh 'chown -R rails:rails /mnt/sqlite_data'
+    sh 'chown rails:rails /mnt/sqlite_data'
     
     # Create and migrate database
     sh 'bin/rails db:create db:migrate'
