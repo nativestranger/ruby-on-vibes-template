@@ -63,3 +63,11 @@ group :test do
 end
 
 gem "islandjs-rails", "~> 0.2.1"
+
+gem "devise", "~> 4.9"
+# gem 'stripe'           # Payments (enable when needed)
+
+
+gem "omniauth-twitter", "~> 1.4"
+
+gem "tailwindcss-rails", "~> 4.3"

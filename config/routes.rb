@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   # IslandJS demo routes (you can remove these)
   get 'islandjs', to: 'islandjs_demo#index'
   get 'islandjs/react', to: 'islandjs_demo#react'
