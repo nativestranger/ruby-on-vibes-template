@@ -1,0 +1,3 @@
+- https://github.com/Praxis-Emergent/islandjs-rails
+- https://github.com/heartcombo/devise
+- https://github.com/rails/tailwindcss-rails

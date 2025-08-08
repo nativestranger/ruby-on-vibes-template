@@ -3,7 +3,6 @@ app = "ruby-on-vibes-template"
 primary_region = "ord"
 
 [build]
-  builder = "heroku/buildpacks:20"
   buildpacks = ["heroku/ruby"]
 
 [env]
