@@ -24,6 +24,10 @@ primary_region = "ord"
   min_machines_running = 0
   processes = ["web"]
 
+# Ensure sufficient memory for Rails migrations
+[vm]
+  memory = "512mb"
+
   [[http_service.checks]]
     grace_period = "10s"
     interval = "30s"
