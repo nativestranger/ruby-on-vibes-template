@@ -26,5 +26,12 @@ module RubyOnVibesTemplate
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # Allow iframe embedding for Live Preview (controlled by ENV var for security)
+    # Set ALLOW_IFRAME_EMBEDDING=true to enable iframe embedding in Ruby on Vibes
+    if ENV['ALLOW_IFRAME_EMBEDDING'] == 'true'
+      # Remove default X-Frame-Options to allow iframe embedding
+      config.force_ssl = false if Rails.env.development?
+    end
   end
 end
