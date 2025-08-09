@@ -38,10 +38,15 @@ class VibesApiController < ApplicationController
   # PUT /vibes_api/files/*path
   def update_file
     require 'securerandom'
-    file_path = params[:path]
+    file_path = params[:path].to_s
     content = params[:content].to_s
     root = vibes_engine_root
-    full_path = root.join(file_path)
+    # Normalize to volume-relative path
+    normalized = file_path.dup
+    normalized = normalized.sub(/\A\/mnt\/data\/vibes\//, '')
+    normalized = normalized.sub(/\Alib\/engines\/vibes\//, '')
+    normalized = normalized.sub(/\A\/+/, '')
+    full_path = root.join(normalized)
 
     unless path_safe?(full_path)
       render json: { success: false, error: "Invalid file path" }, status: 400
@@ -53,7 +58,7 @@ class VibesApiController < ApplicationController
       FileUtils.mkdir_p(full_path.dirname)
 
       # Create git commit before changes (for rollback)
-      create_git_commit_if_needed("Before editing #{file_path}")
+      create_git_commit_if_needed("Before editing #{normalized}")
 
       # Atomic replace to force new inode/mtime and beat template caches
       tmp_path = full_path.dirname.join(".rov.tmp-#{SecureRandom.hex(8)}")
@@ -65,14 +70,14 @@ class VibesApiController < ApplicationController
       FileUtils.mv(tmp_path, full_path)
 
       # Create git commit after changes
-      create_git_commit_if_needed("Updated #{file_path} via Ruby on Vibes")
+      create_git_commit_if_needed("Updated #{normalized} via Ruby on Vibes")
 
-      Rails.logger.info "🎵 Vibes file updated: #{file_path} at #{full_path}"
+      Rails.logger.info "🎵 Vibes file updated: #{normalized} at #{full_path}"
 
       render json: {
         success: true,
         message: "File updated successfully",
-        path: file_path,
+        path: normalized,
         last_modified: File.mtime(full_path).iso8601,
         bytes: File.size(full_path),
         location: root.to_s
