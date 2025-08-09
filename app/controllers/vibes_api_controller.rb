@@ -104,23 +104,26 @@ class VibesApiController < ApplicationController
   private
   
   def authenticate_vibes_api
+    # Prefer static token for cross-app auth
+    static_token = request.headers['X-Vibes-Token'].to_s
+    if ENV['VIBES_API_TOKEN'].present?
+      unless ActiveSupport::SecurityUtils.secure_compare(static_token, ENV['VIBES_API_TOKEN'].to_s)
+        render json: { error: 'Unauthorized' }, status: 401 and return
+      end
+      return
+    end
+
+    # Fallback to signed verifier if no static token configured
     auth_header = request.headers['X-Vibes-Auth']
-    
     unless auth_header
       render json: { error: "Missing authentication" }, status: 401
       return
     end
-    
     begin
-      # Verify the token (matches what Ruby on Vibes generates)
       payload = Rails.application.message_verifier(:vibes_api).verify(auth_header)
-      
-      # Check expiration
       if payload['expires_at'] && Time.parse(payload['expires_at']) < Time.current
-        render json: { error: "Token expired" }, status: 401
-        return
+        render json: { error: "Token expired" }, status: 401 and return
       end
-      
       @auth_payload = payload
     rescue => e
       Rails.logger.error "❌ Vibes API auth failed: #{e.message}"
