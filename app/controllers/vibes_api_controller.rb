@@ -37,35 +37,45 @@ class VibesApiController < ApplicationController
   
   # PUT /vibes_api/files/*path
   def update_file
+    require 'securerandom'
     file_path = params[:path]
-    content = params[:content]
-    full_path = vibes_engine_root.join(file_path)
-    
+    content = params[:content].to_s
+    root = vibes_engine_root
+    full_path = root.join(file_path)
+
     unless path_safe?(full_path)
       render json: { success: false, error: "Invalid file path" }, status: 400
       return
     end
-    
+
     begin
       # Ensure directory exists
       FileUtils.mkdir_p(full_path.dirname)
-      
+
       # Create git commit before changes (for rollback)
       create_git_commit_if_needed("Before editing #{file_path}")
-      
-      # Write the file
-      File.write(full_path, content)
-      
+
+      # Atomic replace to force new inode/mtime and beat template caches
+      tmp_path = full_path.dirname.join(".rov.tmp-#{SecureRandom.hex(8)}")
+      File.open(tmp_path, 'wb') do |f|
+        f.write(content)
+        f.flush
+        f.fsync rescue nil
+      end
+      FileUtils.mv(tmp_path, full_path)
+
       # Create git commit after changes
       create_git_commit_if_needed("Updated #{file_path} via Ruby on Vibes")
-      
-      Rails.logger.info "🎵 Vibes file updated: #{file_path}"
-      
-      render json: { 
-        success: true, 
+
+      Rails.logger.info "🎵 Vibes file updated: #{file_path} at #{full_path}"
+
+      render json: {
+        success: true,
         message: "File updated successfully",
         path: file_path,
-        last_modified: File.mtime(full_path).iso8601
+        last_modified: File.mtime(full_path).iso8601,
+        bytes: File.size(full_path),
+        location: root.to_s
       }
     rescue => e
       Rails.logger.error "❌ Failed to update vibes file #{file_path}: #{e.message}"
@@ -77,21 +87,29 @@ class VibesApiController < ApplicationController
   def reload
     begin
       Rails.logger.info "🔄 Hot reloading vibes engine..."
-      
-      # Clear Rails autoload cache to pick up changes
-      Rails.application.reloader.reload!
-      
-      # Force reload of the vibes engine
-      if defined?(Vibes::Engine)
-        # Clear any cached modules/classes
-        Vibes.send(:remove_const, :Engine) if Vibes.const_defined?(:Engine)
-        load Rails.root.join('lib', 'engines', 'vibes', 'engine.rb')
+
+      # Clear template resolver caches aggressively
+      ActionController::Base.view_paths.each { |r| r.clear_cache if r.respond_to?(:clear_cache) }
+      if defined?(ActionView::LookupContext::DetailsKey)
+        ActionView::LookupContext::DetailsKey.clear
       end
-      
+      begin
+        ActionView::Resolver.caching = false
+        ActionView::Resolver.caching = true
+      rescue
+      end
+      Rails.cache.clear rescue nil
+
+      # Kick reloader (best-effort in production)
+      begin
+        Rails.application.reloader.reload!
+      rescue
+      end
+
       Rails.logger.info "✅ Vibes engine hot reload completed"
-      
-      render json: { 
-        success: true, 
+
+      render json: {
+        success: true,
         message: "Hot reload completed",
         timestamp: Time.current.iso8601
       }
@@ -99,6 +117,15 @@ class VibesApiController < ApplicationController
       Rails.logger.error "❌ Hot reload failed: #{e.message}"
       render json: { success: false, error: e.message }, status: 500
     end
+  end
+
+  # POST /vibes_api/restart
+  # Nuclear option: restart the Fly machine (requires flyctl in image or a sidecar).
+  # For safety, this method attempts a simple process exit; Fly will restart the machine.
+  def restart
+    Rails.logger.warn "🧨 Vibes API restart invoked"
+    Thread.new { sleep 1; Process.kill('TERM', Process.pid) }
+    render json: { success: true, message: 'Process terminating for restart' }
   end
   
   private

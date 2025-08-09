@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     get 'files/*path', to: 'vibes_api#show_file', constraints: { path: /.*/ }
     put 'files/*path', to: 'vibes_api#update_file', constraints: { path: /.*/ }
     post 'reload', to: 'vibes_api#reload'
+    post 'restart', to: 'vibes_api#restart'
   end
   
   # IslandJS demo routes (you can remove these)
