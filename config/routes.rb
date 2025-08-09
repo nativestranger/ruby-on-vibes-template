@@ -6,6 +6,14 @@ Rails.application.routes.draw do
     root 'home#index'
   end
   
+  # Vibes API routes (for live editing from Ruby on Vibes)
+  scope :vibes_api do
+    get 'files', to: 'vibes_api#files'
+    get 'files/*path', to: 'vibes_api#show_file', constraints: { path: /.*/ }
+    put 'files/*path', to: 'vibes_api#update_file', constraints: { path: /.*/ }
+    post 'reload', to: 'vibes_api#reload'
+  end
+  
   # IslandJS demo routes (you can remove these)
   get 'islandjs', to: 'islandjs_demo#index'
   get 'islandjs/react', to: 'islandjs_demo#react'
