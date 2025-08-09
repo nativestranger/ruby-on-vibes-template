@@ -62,7 +62,7 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "islandjs-rails", "~> 0.2.1"
+gem "islandjs-rails"
 
 gem "devise", "~> 4.9"
 # gem 'stripe'           # Payments (enable when needed)
